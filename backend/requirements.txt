@@ -1,0 +1,12 @@
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+asyncpg==0.30.0
+openai==1.59.6
+pydantic==2.10.4
+python-dotenv==1.0.1
+yfinance>=0.2.50
+langgraph>=0.2.28
+langchain-core>=0.3.0
+langsmith>=0.1.0
+python-jose[cryptography]>=3.3.0
+bcrypt>=4.0.0

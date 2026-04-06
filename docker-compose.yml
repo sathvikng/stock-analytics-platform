@@ -1,0 +1,51 @@
+services:
+
+  # ── Ollama (containerised — only needed when running without a host Ollama) ─
+  # Start with: docker compose --profile ollama up
+  # Skip this profile if Ollama is already running on the host (port 11434).
+  ollama:
+    image: ollama/ollama:latest
+    container_name: meshdefend-ollama
+    volumes:
+      - ollama_data:/root/.ollama
+    # No host port mapping — backend reaches it via the Docker network name
+    entrypoint: >
+      sh -c "ollama serve &
+             sleep 5 &&
+             ollama pull qwen3:8b &&
+             wait"
+    profiles:
+      - ollama          # only starts with: docker compose --profile ollama up
+
+  # ── FastAPI Backend ────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+    container_name: meshdefend-backend
+    env_file:
+      - ./backend/.env
+    environment:
+      # host.docker.internal → reaches Ollama running natively on the Mac host
+      OLLAMA_BASE_URL: http://host.docker.internal:11434/v1
+      JWT_SECRET: ${JWT_SECRET:-meshdefend-dev-secret-change-in-production}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # ── Next.js Frontend ───────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+    container_name: meshdefend-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
