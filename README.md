@@ -1,4 +1,4 @@
-# MeshDefend — Stock Market Analytics Platform
+# Stock Market Analytics Platform
 
 AI-powered stock analytics platform. Ask natural-language questions about 32 stocks and receive tabular answers with optional charts. Built with a 4-node LangGraph agentic pipeline, SSE streaming, JWT auth, and full chat history persistence.
 
